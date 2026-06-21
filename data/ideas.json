@@ -2,6 +2,13 @@
   "version": "1.0",
   "ideas": [
     {
+      "id": "ce2fd146-7f7f-4672-8c01-cfcbdc44cc5e",
+      "title": "Wifi Adapter",
+      "content": "<p>Arduino based USB Compatible Wifi Adapter</p><p>it is fine if the speed is low, just in emergency it can be helpful</p>",
+      "created_at": "2026-06-21T19:04:02.040Z",
+      "updated_at": "2026-06-21T19:04:02.040Z"
+    },
+    {
       "id": "04dc3899-67fa-4a85-928a-67c4784accde",
       "title": "Bluetooth Remote Controller for My PC",
       "content": "<ol><li>Ability to control sound,</li><li>pause, </li><li>play</li><li>fast forward</li><li>backward</li></ol><p>usb to pc</p><p>remote controller in my hand</p>",
