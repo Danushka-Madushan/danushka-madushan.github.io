@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IdeaVault — Project Ideas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+
+  <style>
+    /* ── Reset ────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    /* ── Design Tokens ────────────────────────────────────── */
+    :root {
+      /* Palette — cobalt + navy workspace */
+      --ink:           #1a2036;   /* primary text */
+      --slate:         #5a647a;   /* secondary text */
+      --fog:           #9ba5b7;   /* muted / placeholders */
+      --mist:          #f1f4fc;   /* app background */
+      --surface:       #ffffff;   /* cards, sidebar */
+      --border:        #e2e6f0;   /* subtle borders */
+      --border-dark:   #cdd3e0;   /* inputs, dividers */
+
+      --cobalt:        #2563eb;   /* primary action */
+      --cobalt-hover:  #1d4ed8;
+      --cobalt-light:  #eff4ff;   /* tints */
+      --cobalt-mid:    #dbeafe;   /* stronger tint */
+
+      --emerald:       #059669;   /* success */
+      --emerald-light: #ecfdf5;
+      --rose:          #dc2626;   /* danger */
+      --rose-light:    #fef2f2;
+      --amber:         #d97706;   /* warning */
+      --amber-light:   #fffbeb;
+
+      /* Shadow tokens */
+      --shadow-xs: 0 1px 2px rgba(26,32,54,.06);
+      --shadow-sm: 0 1px 3px rgba(26,32,54,.08), 0 1px 2px rgba(26,32,54,.06);
+      --shadow-md: 0 4px 6px rgba(26,32,54,.07), 0 2px 4px rgba(26,32,54,.06);
+      --shadow-lg: 0 10px 15px rgba(26,32,54,.1), 0 4px 6px rgba(26,32,54,.07);
+      --shadow-xl: 0 20px 25px rgba(26,32,54,.12), 0 8px 10px rgba(26,32,54,.08);
+
+      /* Radius */
+      --r-xs:  4px;
+      --r-sm:  6px;
+      --r-md:  10px;
+      --r-lg:  14px;
+      --r-xl:  20px;
+      --r-2xl: 28px;
+
+      /* Layout */
+      --sidebar-w: 268px;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* ── Base ─────────────────────────────────────────────── */
+    body {
+      font-family: var(--font);
+      background: var(--mist);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── App Shell ────────────────────────────────────────── */
+    #app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Logo */
+    .logo-bar {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--cobalt);
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(37,99,235,.35);
+    }
+    .logo-mark .material-icons-round { font-size: 20px; color: #fff; }
+    .logo-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+    }
+    .logo-name em { color: var(--cobalt); font-style: normal; }
+
+    /* Status chip */
+    #sync-status {
+      margin: 0 14px 10px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+    #sync-status .material-icons-round { font-size: 13px; }
+    #sync-status.synced  { display:flex; background:var(--emerald-light); color:var(--emerald); }
+    #sync-status.syncing { display:flex; background:var(--amber-light);   color:var(--amber);   }
+    #sync-status.error   { display:flex; background:var(--rose-light);    color:var(--rose);    }
+    #sync-status.local   { display:flex; background:var(--mist);          color:var(--slate);   }
+
+    /* New Idea button */
+    .btn-new {
+      margin: 6px 14px 14px;
+      height: 44px;
+      background: var(--cobalt);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-xl);
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      letter-spacing: 0.2px;
+      transition: background .18s, box-shadow .18s;
+      box-shadow: 0 2px 8px rgba(37,99,235,.3);
+    }
+    .btn-new:hover { background: var(--cobalt-hover); box-shadow: 0 4px 12px rgba(37,99,235,.4); }
+    .btn-new .material-icons-round { font-size: 19px; }
+
+    /* Search */
+    .search-wrap {
+      padding: 0 14px 10px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px 0 34px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--mist);
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .search-input:focus {
+      border-color: var(--cobalt);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      background: #fff;
+    }
+    .search-input::placeholder { color: var(--fog); }
+    .search-icon {
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--fog);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    /* Sort / count bar */
+    .list-meta {
+      padding: 0 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .idea-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fog);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .sort-select {
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--cobalt);
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Ideas list */
+    #ideas-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2px 8px 8px;
+    }
+    #ideas-list::-webkit-scrollbar { width: 3px; }
+    #ideas-list::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 2px; }
+
+    .idea-card {
+      padding: 11px 12px 11px 14px;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: background .14s;
+      margin-bottom: 2px;
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+    .idea-card:hover { background: var(--mist); }
+    .idea-card.active {
+      background: var(--cobalt-light);
+      border-left-color: var(--cobalt);
+    }
+    .idea-card.active .card-title { color: var(--cobalt); }
+    .card-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .card-preview {
+      font-size: 12px;
+      color: var(--slate);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .card-date {
+      font-size: 11px;
+      color: var(--fog);
+    }
+
+    .sidebar-empty {
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--fog);
+    }
+    .sidebar-empty .material-icons-round { font-size: 36px; display: block; margin-bottom: 8px; }
+    .sidebar-empty p { font-size: 12.5px; line-height: 1.6; }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--fog);
+      transition: background .14s, color .14s;
+      flex-shrink: 0;
+    }
+    .icon-btn:hover { background: var(--mist); color: var(--ink); }
+    .icon-btn .material-icons-round { font-size: 18px; }
+    .footer-spacer { flex: 1; }
+    .footer-note {
+      font-size: 11px;
+      color: var(--fog);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      text-align: center;
+    }
+
+    /* ── Main ─────────────────────────────────────────────── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--mist);
+    }
+
+    /* Empty state */
+    #empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 40px;
+    }
+    .empty-glyph {
+      width: 72px;
+      height: 72px;
+      background: var(--cobalt-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .empty-glyph .material-icons-round { font-size: 34px; color: var(--cobalt); }
+    #empty-state h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+    #empty-state p { font-size: 14px; color: var(--slate); text-align: center; max-width: 280px; line-height: 1.6; }
+    .btn-empty {
+      padding: 10px 24px;
+      background: var(--cobalt);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-xl);
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .btn-empty:hover { background: var(--cobalt-hover); }
+
+    /* Idea panel */
+    #idea-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface);
+      margin: 12px 12px 12px 0;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    /* Panel header */
+    .panel-header {
+      padding: 18px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .header-left { flex: 1; min-width: 0; }
+
+    #view-title {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    #view-meta { font-size: 11.5px; color: var(--fog); }
+
+    #title-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+      background: transparent;
+      padding: 0;
+      margin-bottom: 4px;
+    }
+    #title-input::placeholder { color: var(--fog); }
+    #edit-hint { font-size: 11.5px; color: var(--fog); }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; padding-top: 2px; }
+
+    /* Buttons */
+    .btn {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: var(--r-xl);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .18s, box-shadow .18s, color .18s;
+      white-space: nowrap;
+      letter-spacing: 0.1px;
+    }
+    .btn .material-icons-round { font-size: 16px; }
+    .btn-primary { background: var(--cobalt); color: #fff; }
+    .btn-primary:hover { background: var(--cobalt-hover); }
+    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--slate);
+      border: 1px solid var(--border-dark);
+    }
+    .btn-ghost:hover { background: var(--mist); color: var(--ink); }
+    .btn-outlined-blue {
+      background: transparent;
+      color: var(--cobalt);
+      border: 1px solid var(--cobalt-mid);
+    }
+    .btn-outlined-blue:hover { background: var(--cobalt-light); }
+    .btn-danger {
+      background: transparent;
+      color: var(--rose);
+      border: 1px solid #fecaca;
+    }
+    .btn-danger:hover { background: var(--rose-light); }
+
+    /* Panel body */
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+    }
+    .panel-body::-webkit-scrollbar { width: 5px; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 3px; }
+
+    /* View mode */
+    #view-content {
+      padding: 24px 32px 40px;
+      max-width: 820px;
+    }
+    /* Rich text display styles */
+    #view-content h1 { font-size: 20px; font-weight: 700; color: var(--ink); margin: 20px 0 8px; letter-spacing: -0.3px; }
+    #view-content h2 { font-size: 17px; font-weight: 700; color: var(--ink); margin: 16px 0 6px; letter-spacing: -0.2px; }
+    #view-content h3 { font-size: 15px; font-weight: 600; color: var(--ink); margin: 12px 0 4px; }
+    #view-content p  { margin: 6px 0; color: var(--ink); line-height: 1.75; }
+    #view-content ul, #view-content ol { padding-left: 22px; margin: 8px 0; }
+    #view-content li { margin: 3px 0; line-height: 1.65; color: var(--ink); }
+    #view-content strong { font-weight: 700; }
+    #view-content em { font-style: italic; }
+    #view-content s { text-decoration: line-through; color: var(--slate); }
+    #view-content a { color: var(--cobalt); text-decoration: underline; text-underline-offset: 2px; }
+    #view-content blockquote {
+      border-left: 3px solid var(--cobalt);
+      padding: 10px 16px;
+      margin: 12px 0;
+      background: var(--cobalt-light);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      color: var(--slate);
+      font-size: 14px;
+    }
+    #view-content pre {
+      background: #f8faff;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: var(--r-md);
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+    #view-content code {
+      background: var(--cobalt-light);
+      color: var(--cobalt-hover);
+      padding: 2px 7px;
+      border-radius: var(--r-xs);
+      font-family: var(--mono);
+      font-size: 12.5px;
+    }
+    #view-content pre code { background: none; padding: 0; color: var(--ink); border-radius: 0; }
+    #view-content input[type="checkbox"] { margin-right: 6px; accent-color: var(--cobalt); }
+
+    /* Editor */
+    #editor-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    #editor-container { flex: 1; }
+
+    /* Quill overrides */
+    .ql-toolbar.ql-snow {
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      padding: 8px 24px !important;
+      font-family: var(--font) !important;
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .ql-container.ql-snow {
+      border: none !important;
+      font-family: var(--font) !important;
+      font-size: 14.5px !important;
+      color: var(--ink) !important;
+    }
+    .ql-editor {
+      padding: 24px 32px 48px !important;
+      min-height: 360px !important;
+      line-height: 1.75 !important;
+      color: var(--ink) !important;
+    }
+    .ql-editor.ql-blank::before {
+      color: var(--fog) !important;
+      font-style: normal !important;
+      left: 32px !important;
+    }
+    .ql-snow .ql-stroke { stroke: var(--slate) !important; }
+    .ql-snow .ql-fill  { fill:   var(--slate) !important; }
+    .ql-snow .ql-picker { color: var(--slate) !important; font-family: var(--font) !important; }
+    .ql-snow.ql-toolbar button:hover .ql-stroke  { stroke: var(--cobalt) !important; }
+    .ql-snow.ql-toolbar button.ql-active .ql-stroke { stroke: var(--cobalt) !important; }
+    .ql-snow.ql-toolbar button:hover .ql-fill   { fill:   var(--cobalt) !important; }
+    .ql-snow.ql-toolbar button.ql-active .ql-fill  { fill:   var(--cobalt) !important; }
+    .ql-snow.ql-toolbar button.ql-active  { color: var(--cobalt) !important; }
+    .ql-snow .ql-picker-label:hover       { color: var(--cobalt) !important; }
+    .ql-picker-options .ql-picker-item:hover { color: var(--cobalt) !important; }
+    .ql-snow .ql-picker-options { border-color: var(--border) !important; border-radius: var(--r-sm) !important; box-shadow: var(--shadow-md) !important; }
+    .ql-editor h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .ql-editor h2 { font-size: 17px; font-weight: 700; }
+    .ql-editor h3 { font-size: 15px; font-weight: 600; }
+    .ql-editor blockquote { border-left: 3px solid var(--cobalt) !important; padding: 8px 14px; background: var(--cobalt-light); border-radius: 0 4px 4px 0; color: var(--slate); }
+
+    /* ── Modals ───────────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,20,40,.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn .18s ease;
+    }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--r-2xl);
+      padding: 28px;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp .22s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 2px; }
+    .modal-sm { width: 420px; max-width: calc(100vw - 32px); }
+    .modal-md { width: 540px; max-width: calc(100vw - 32px); }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .modal-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .modal-icon.blue   { background: var(--cobalt-light); }
+    .modal-icon.blue .material-icons-round { color: var(--cobalt); font-size: 22px; }
+    .modal-icon.red    { background: var(--rose-light); }
+    .modal-icon.red .material-icons-round  { color: var(--rose);   font-size: 22px; }
+    .modal-title    { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.2px; }
+    .modal-subtitle { font-size: 12.5px; color: var(--slate); margin-top: 2px; }
+
+    /* Form */
+    .field { margin-bottom: 14px; }
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--slate);
+      margin-bottom: 5px;
+    }
+    .field-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--r-md);
+      font-family: var(--font);
+      font-size: 13.5px;
+      color: var(--ink);
+      background: var(--surface);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .field-input:focus {
+      border-color: var(--cobalt);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .field-hint { font-size: 11.5px; color: var(--fog); margin-top: 4px; }
+    .field-hint a { color: var(--cobalt); text-decoration: none; }
+    .field-hint a:hover { text-decoration: underline; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+    .alert-box {
+      padding: 11px 14px;
+      border-radius: var(--r-md);
+      font-size: 12.5px;
+      line-height: 1.55;
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .alert-box .material-icons-round { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+    .alert-box.info    { background: var(--cobalt-light); color: var(--cobalt-hover); }
+    .alert-box.warning { background: var(--amber-light);  color: var(--amber); }
+    .alert-box.danger  { background: var(--rose-light);   color: var(--rose); }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    /* ── Loading ──────────────────────────────────────────── */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 9000;
+    }
+    .loading-icon { font-size: 44px; color: var(--cobalt); }
+    .loading-text { font-size: 13px; color: var(--slate); font-weight: 500; }
+
+    /* ── Toasts ───────────────────────────────────────────── */
+    #toasts {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 11px 16px;
+      border-radius: var(--r-md);
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: var(--shadow-lg);
+      min-width: 260px;
+      max-width: 380px;
+      animation: slideInR .22s ease forwards;
+      pointer-events: auto;
+    }
+    .toast .material-icons-round { font-size: 17px; flex-shrink: 0; }
+    .toast-success { background: #064e3b; color: #fff; }
+    .toast-error   { background: #7f1d1d; color: #fff; }
+    .toast-info    { background: var(--ink); color: #fff; }
+    .toast-out { animation: slideOutR .22s ease forwards; }
+
+    /* ── Animations ───────────────────────────────────────── */
+    @keyframes fadeIn    { from { opacity:0 } to { opacity:1 } }
+    @keyframes slideUp   { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes slideInR  { from { opacity:0; transform:translateX(18px) } to { opacity:1; transform:translateX(0) } }
+    @keyframes slideOutR { to   { opacity:0; transform:translateX(18px) } }
+    @keyframes spin { to { transform:rotate(360deg) } }
+    .spin-anim { animation: spin .9s linear infinite; display:inline-flex; }
+
+    /* ── Utility ──────────────────────────────────────────── */
+    .hidden { display: none !important; }
+    * { scrollbar-width: thin; scrollbar-color: var(--border-dark) transparent; }
+  </style>
+</head>
+<body>
+
+<!-- ─── Loading ──────────────────────────────────────── -->
+<div id="loading">
+  <span class="material-icons-round loading-icon">lightbulb</span>
+  <div class="loading-text">Loading IdeaVault…</div>
+</div>
+
+<!-- ─── Toast Container ───────────────────────────────── -->
+<div id="toasts"></div>
+
+<!-- ─── Setup / Settings Modal ───────────────────────── -->
+<div id="setup-overlay" class="overlay hidden">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <div class="modal-icon blue">
+        <span class="material-icons-round">hub</span>
+      </div>
+      <div>
+        <div class="modal-title">GitHub Storage Setup</div>
+        <div class="modal-subtitle">Your ideas commit to your repo as JSON — always in version control</div>
+      </div>
+    </div>
+
+    <div class="alert-box info">
+      <span class="material-icons-round">info</span>
+      <div>
+        Your <strong>Personal Access Token</strong> is stored in this browser only — it is sent directly to the GitHub API, never anywhere else.
+        Use a <strong>fine-grained token</strong> with <strong>Contents: Read &amp; Write</strong> on your repo.
+        <br><br>
+        <em>Note: GitHub Actions Secrets are not accessible from Pages frontend — localStorage is the correct approach for personal tools.</em>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <label class="field-label" for="cfg-owner">GitHub Username</label>
+        <input class="field-input" id="cfg-owner" type="text" placeholder="octocat" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="cfg-repo">Repository Name</label>
+        <input class="field-input" id="cfg-repo" type="text" placeholder="my-ideas" autocomplete="off">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <label class="field-label" for="cfg-branch">Branch</label>
+        <input class="field-input" id="cfg-branch" type="text" placeholder="main" value="main" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="cfg-file">Data File Path</label>
+        <input class="field-input" id="cfg-file" type="text" placeholder="data/ideas.json" value="data/ideas.json" autocomplete="off">
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label class="field-label" for="cfg-token">Personal Access Token (PAT)</label>
+      <input class="field-input" id="cfg-token" type="password" placeholder="github_pat_…" autocomplete="new-password">
+      <div class="field-hint">
+        <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Create a fine-grained token ↗</a>
+        — enable <strong>Contents: Read &amp; Write</strong> for your repo only.
+      </div>
+    </div>
+
+    <div class="alert-box danger hidden" id="setup-err">
+      <span class="material-icons-round">error</span>
+      <span id="setup-err-msg">Connection failed.</span>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btn-use-local">Use locally (no sync)</button>
+      <button class="btn btn-primary" id="btn-connect">
+        <span class="material-icons-round">link</span> Connect Repository
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Delete Confirm Modal ──────────────────────────── -->
+<div id="delete-overlay" class="overlay hidden">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <div class="modal-icon red">
+        <span class="material-icons-round">delete_forever</span>
+      </div>
+      <div>
+        <div class="modal-title">Delete this idea?</div>
+        <div class="modal-subtitle" id="delete-sub">This will be committed as a deletion.</div>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--slate);line-height:1.6">
+      "<strong id="delete-idea-name" style="color:var(--ink)"></strong>" will be permanently removed from your repository. This cannot be undone here (though Git history preserves it).
+    </p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btn-delete-cancel">Cancel</button>
+      <button class="btn btn-danger" id="btn-delete-confirm">
+        <span class="material-icons-round">delete_forever</span> Delete Idea
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── App ───────────────────────────────────────────── -->
+<div id="app" class="hidden">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="logo-bar">
+      <div class="logo-mark"><span class="material-icons-round">lightbulb</span></div>
+      <div class="logo-name">Idea<em>Vault</em></div>
+    </div>
+
+    <div id="sync-status">
+      <span class="material-icons-round" id="sync-icon">cloud_done</span>
+      <span id="sync-text">Synced</span>
+    </div>
+
+    <button class="btn-new" id="btn-new">
+      <span class="material-icons-round">add</span> New Idea
+    </button>
+
+    <div class="search-wrap">
+      <span class="material-icons-round search-icon">search</span>
+      <input class="search-input" id="search" type="text" placeholder="Search ideas…" autocomplete="off">
+    </div>
+
+    <div class="list-meta">
+      <span class="idea-count" id="idea-count">0 IDEAS</span>
+      <select class="sort-select" id="sort">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="updated">Last edited</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+
+    <div id="ideas-list">
+      <div class="sidebar-empty" id="list-empty">
+        <span class="material-icons-round">lightbulb</span>
+        <p>No ideas yet.<br>Create your first one!</p>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="icon-btn" id="btn-settings" title="Settings (GitHub config)">
+        <span class="material-icons-round">settings</span>
+      </button>
+      <span class="footer-note" id="footer-note">IdeaVault</span>
+      <button class="icon-btn" id="btn-sync" title="Sync with GitHub">
+        <span class="material-icons-round">sync</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="main">
+
+    <!-- Empty state (no idea selected) -->
+    <div id="empty-state">
+      <div class="empty-glyph">
+        <span class="material-icons-round">lightbulb</span>
+      </div>
+      <h2>Capture before you forget</h2>
+      <p>Your best project ideas deserve a place to live. Jot them down the moment they come.</p>
+      <button class="btn-empty" id="btn-empty-new">+ New Idea</button>
+    </div>
+
+    <!-- Idea panel -->
+    <div id="idea-panel" class="hidden">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <div class="header-left">
+          <!-- View: title + meta -->
+          <h2 id="view-title"></h2>
+          <div id="view-meta"></div>
+          <!-- Edit: title input + hint -->
+          <input id="title-input" type="text" placeholder="Give your idea a title…" class="hidden">
+          <div id="edit-hint" class="hidden">Press <kbd style="font-family:var(--mono);background:var(--mist);padding:1px 5px;border-radius:3px;font-size:10.5px">Ctrl+S</kbd> to save</div>
+        </div>
+        <div class="header-actions">
+          <!-- View actions -->
+          <button class="btn btn-outlined-blue hidden" id="btn-edit">
+            <span class="material-icons-round">edit</span> Edit
+          </button>
+          <button class="btn btn-danger hidden" id="btn-delete">
+            <span class="material-icons-round">delete</span> Delete
+          </button>
+          <!-- Edit actions -->
+          <button class="btn btn-ghost hidden" id="btn-cancel">Cancel</button>
+          <button class="btn btn-primary hidden" id="btn-save">
+            <span class="material-icons-round">save</span> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="panel-body">
+        <!-- View content -->
+        <div id="view-content" class="hidden"></div>
+        <!-- Editor -->
+        <div id="editor-wrap" class="hidden">
+          <div id="editor-container"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════ */
+const STORE_CONFIG = 'ideavault_cfg';
+const STORE_LOCAL  = 'ideavault_data';
+const STORE_SORT   = 'ideavault_sort';
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+const S = {
+  ideas:      [],
+  sha:        null,      // GitHub file SHA for updates
+  currentId:  null,
+  isEditing:  false,
+  isNew:      false,
+  mode:       'local',   // 'local' | 'github'
+  config:     null,
+  query:      '',
+  sort:       localStorage.getItem(STORE_SORT) || 'newest',
+  syncing:    false,
+  lastSaved:  null,
+};
+
+let quill = null;  // Quill instance (lazy-init)
+
+/* ═══════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════ */
+const uid = () =>
+  typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+
+const fmtDate = (iso) => {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const fmtDateTime = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    + ' at ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+};
+
+const stripHtml = (html) => {
+  const el = document.createElement('div');
+  el.innerHTML = html || '';
+  return el.textContent || el.innerText || '';
+};
+
+const esc = (s) => String(s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// Unicode-safe base64 encode/decode
+const b64Enc = (str) => {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+};
+
+const b64Dec = (str) => {
+  const clean = str.replace(/\n/g, '');
+  const binary = atob(clean);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+};
+
+const $ = (id) => document.getElementById(id);
+const show = (el, d = 'block') => { 
+  if (el) {
+    el.classList.remove('hidden'); 
+    el.style.display = d; 
+  }
+};
+
+const hide = (el) => { 
+  if (el) {
+    el.classList.add('hidden'); 
+  }
+};
+const showId = (id, d = 'block') => show($(id), d);
+const hideId = (id) => hide($(id));
+
+/* ═══════════════════════════════════════════════════════
+   GITHUB API
+═══════════════════════════════════════════════════════ */
+const GH = {
+  get headers() {
+    return {
+      'Authorization':        `Bearer ${S.config.token}`,
+      'Accept':               'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Content-Type':         'application/json',
+    };
+  },
+  get fileUrl() {
+    const c = S.config;
+    return `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.file}`;
+  },
+
+  async getFile() {
+    const res = await fetch(this.fileUrl + `?ref=${S.config.branch}`, { headers: this.headers });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || `HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async putFile(data, sha, message) {
+    const body = {
+      message,
+      content: b64Enc(JSON.stringify(data, null, 2)),
+      branch:  S.config.branch,
+    };
+    if (sha) body.sha = sha;
+    const res = await fetch(this.fileUrl, {
+      method:  'PUT',
+      headers: this.headers,
+      body:    JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || `HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async testRepo() {
+    const res = await fetch(
+      `https://api.github.com/repos/${S.config.owner}/${S.config.repo}`,
+      { headers: this.headers }
+    );
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || `HTTP ${res.status}`);
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   PERSISTENCE
+═══════════════════════════════════════════════════════ */
+async function loadIdeas() {
+  if (S.mode === 'local') {
+    try {
+      const raw = localStorage.getItem(STORE_LOCAL);
+      S.ideas = raw ? (JSON.parse(raw).ideas || []) : [];
+    } catch { S.ideas = []; }
+    return;
+  }
+
+  setSyncStatus('syncing', 'Syncing…');
+  try {
+    const file = await GH.getFile();
+    if (!file) {
+      S.ideas = [];
+      S.sha   = null;
+    } else {
+      const data = JSON.parse(b64Dec(file.content));
+      S.ideas = data.ideas || [];
+      S.sha   = file.sha;
+    }
+    setSyncStatus('synced', 'Synced');
+    S.lastSaved = new Date();
+    updateFooter();
+  } catch (err) {
+    setSyncStatus('error', 'Sync failed');
+    toast('Failed to load from GitHub: ' + err.message, 'error');
+    // Fallback to local cache
+    const cached = localStorage.getItem(STORE_LOCAL);
+    if (cached) {
+      try { S.ideas = JSON.parse(cached).ideas || []; } catch {}
+      toast('Showing cached data', 'info');
+    }
+  }
+}
+
+async function saveIdeas(commitMsg) {
+  const data = { version: '1.0', ideas: S.ideas };
+
+  // Always write local cache
+  localStorage.setItem(STORE_LOCAL, JSON.stringify(data));
+
+  if (S.mode === 'local') return;
+
+  setSyncStatus('syncing', 'Saving…');
+  try {
+    const result = await GH.putFile(data, S.sha, commitMsg || `IdeaVault: update — ${new Date().toISOString()}`);
+    S.sha = result.content.sha;
+    setSyncStatus('synced', 'Saved to GitHub');
+    S.lastSaved = new Date();
+    updateFooter();
+  } catch (err) {
+    // 409 Conflict → refetch SHA and retry once
+    if (err.message.includes('409') || err.message.toLowerCase().includes('conflict')) {
+      toast('File conflict detected — refreshing…', 'info');
+      try {
+        const file = await GH.getFile();
+        if (file) S.sha = file.sha;
+        const result = await GH.putFile(data, S.sha, commitMsg || `IdeaVault: update — ${new Date().toISOString()}`);
+        S.sha = result.content.sha;
+        setSyncStatus('synced', 'Saved to GitHub');
+        S.lastSaved = new Date();
+        updateFooter();
+        return;
+      } catch {}
+    }
+    setSyncStatus('error', 'Save failed');
+    toast('Save failed: ' + err.message, 'error');
+    throw err;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATUS & TOAST
+═══════════════════════════════════════════════════════ */
+function setSyncStatus(type, text) {
+  const el = $('sync-status');
+  const icon = $('sync-icon');
+  const txt  = $('sync-text');
+  el.className = type;  // 'synced' | 'syncing' | 'error' | 'local'
+  const icons = { synced:'cloud_done', syncing:'sync', error:'cloud_off', local:'cloud_off' };
+  icon.textContent = icons[type] || 'cloud_off';
+  if (type === 'syncing') icon.parentElement.querySelector('.material-icons-round').classList.add('spin-anim');
+  else icon.classList.remove('spin-anim');
+  txt.textContent = text;
+}
+
+function updateFooter() {
+  const el = $('footer-note');
+  if (S.mode === 'github' && S.lastSaved) {
+    el.textContent = 'GitHub · ' + S.lastSaved.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  } else if (S.mode === 'local') {
+    el.textContent = 'Local storage only';
+  }
+}
+
+function toast(msg, type = 'info', ms = 3800) {
+  const icons = { success:'check_circle', error:'error', info:'info' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span class="material-icons-round">${icons[type]||'info'}</span><span>${esc(msg)}</span>`;
+  $('toasts').appendChild(el);
+  setTimeout(() => {
+    el.classList.add('toast-out');
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }, ms);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════ */
+function renderList() {
+  const list  = $('ideas-list');
+  const empty = $('list-empty');
+  const count = $('idea-count');
+
+  // Filter
+  let ideas = [...S.ideas];
+  if (S.query) {
+    const q = S.query.toLowerCase();
+    ideas = ideas.filter(i =>
+      i.title.toLowerCase().includes(q) ||
+      stripHtml(i.content).toLowerCase().includes(q)
+    );
+  }
+
+  // Sort
+  const sorters = {
+    newest:  (a, b) => new Date(b.created_at) - new Date(a.created_at),
+    oldest:  (a, b) => new Date(a.created_at) - new Date(b.created_at),
+    updated: (a, b) => new Date(b.updated_at)  - new Date(a.updated_at),
+    alpha:   (a, b) => (a.title || '').localeCompare(b.title || ''),
+  };
+  ideas.sort(sorters[S.sort] || sorters.newest);
+
+  count.textContent = `${ideas.length} IDEA${ideas.length !== 1 ? 'S' : ''}`;
+
+  // Clear old cards
+  list.querySelectorAll('.idea-card').forEach(el => el.remove());
+
+  if (ideas.length === 0) {
+    show(empty);
+    return;
+  }
+  hide(empty);
+
+  ideas.forEach(idea => {
+    const div = document.createElement('div');
+    div.className = 'idea-card' + (idea.id === S.currentId ? ' active' : '');
+    div.dataset.id = idea.id;
+    const preview = stripHtml(idea.content).trim().slice(0, 72) || 'No content yet';
+    div.innerHTML = `
+      <div class="card-title">${esc(idea.title || 'Untitled')}</div>
+      <div class="card-preview">${esc(preview)}</div>
+      <div class="card-date">${fmtDate(idea.updated_at || idea.created_at)}</div>
+    `;
+    div.addEventListener('click', () => openIdea(idea.id));
+    list.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   IDEA OPEN / MODES
+═══════════════════════════════════════════════════════ */
+function openIdea(id) {
+  const idea = S.ideas.find(i => i.id === id);
+  if (!idea) return;
+  S.currentId = id;
+  S.isEditing = false;
+  S.isNew     = false;
+  hide($('empty-state'));
+  show($('idea-panel'), 'flex');
+  $('idea-panel').style.flexDirection = 'column';
+  toViewMode(idea);
+  renderList();
+}
+
+function toViewMode(idea) {
+  // Header
+  show($('view-title'));
+  show($('view-meta'));
+  hide($('title-input'));
+  hideId('edit-hint');
+  // Content
+  show($('view-content'));
+  hide($('editor-wrap'));
+  // Actions
+  show($('btn-edit'),   'flex');
+  show($('btn-delete'), 'flex');
+  hide($('btn-cancel'));
+  hide($('btn-save'));
+
+  $('view-title').textContent = idea.title || 'Untitled';
+  const created = `Created ${fmtDateTime(idea.created_at)}`;
+  const edited  = idea.updated_at && idea.updated_at !== idea.created_at
+    ? ` · Edited ${fmtDateTime(idea.updated_at)}` : '';
+  $('view-meta').textContent = created + edited;
+  $('view-content').innerHTML = idea.content || '<p style="color:var(--fog)">No content.</p>';
+
+  S.isEditing = false;
+}
+
+function toEditMode(idea) {
+  // Header
+  hide($('view-title'));
+  hide($('view-meta'));
+  show($('title-input'));
+  show($('edit-hint'));
+  // Content
+  hide($('view-content'));
+  show($('editor-wrap'));
+  // Actions
+  hide($('btn-edit'));
+  hide($('btn-delete'));
+  show($('btn-cancel'), 'flex');
+  show($('btn-save'),   'flex');
+
+  $('title-input').value = idea ? idea.title : '';
+
+  // Init Quill on first use
+  if (!quill) initQuill();
+
+  // Set editor content
+  requestAnimationFrame(() => {
+    const html = idea && idea.content ? idea.content : '';
+    if (html) {
+      const delta = quill.clipboard.convert({ html });
+      quill.setContents(delta, 'silent');
+    } else {
+      quill.setContents([], 'silent');
+    }
+    $('title-input').focus();
+  });
+
+  S.isEditing = true;
+}
+
+function initQuill() {
+  const toolbar = [
+    [{ header: [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+    ['blockquote', 'code-block'],
+    ['link'],
+    ['clean'],
+  ];
+  quill = new Quill('#editor-container', {
+    theme:   'snow',
+    placeholder: 'Describe your idea — goals, tech stack, inspiration…',
+    modules: { toolbar },
+  });
+}
+
+function showEmptyState() {
+  show($('empty-state'), 'flex');
+  $('empty-state').style.flexDirection = 'column';
+  hide($('idea-panel'));
+  S.currentId = null;
+  renderList();
+}
+
+/* ═══════════════════════════════════════════════════════
+   CRUD
+═══════════════════════════════════════════════════════ */
+function startNew() {
+  S.isNew     = true;
+  S.currentId = null;
+  S.isEditing = true;
+  hide($('empty-state'));
+  show($('idea-panel'), 'flex');
+  $('idea-panel').style.flexDirection = 'column';
+  toEditMode(null);
+  renderList();
+}
+
+async function saveCurrent() {
+  const title   = $('title-input').value.trim();
+  const content = quill ? (quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML) : '';
+
+  if (!title) {
+    toast('Please enter a title for your idea', 'error');
+    $('title-input').focus();
+    return;
+  }
+
+  const btn = $('btn-save');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-round spin-anim">sync</span> Saving…';
+
+  const now = new Date().toISOString();
+
+  try {
+    let savedIdea;
+    if (S.isNew) {
+      savedIdea = { id: uid(), title, content, created_at: now, updated_at: now };
+      S.ideas.unshift(savedIdea);
+      S.currentId = savedIdea.id;
+      await saveIdeas(`Add idea: "${title}"`);
+      toast('Idea created and saved!', 'success');
+    } else {
+      const idx = S.ideas.findIndex(i => i.id === S.currentId);
+      if (idx < 0) throw new Error('Idea not found');
+      S.ideas[idx] = { ...S.ideas[idx], title, content, updated_at: now };
+      savedIdea = S.ideas[idx];
+      await saveIdeas(`Update idea: "${title}"`);
+      toast('Idea saved!', 'success');
+    }
+    S.isNew = false;
+    toViewMode(savedIdea);
+    renderList();
+  } catch (err) {
+    // Error already toasted in saveIdeas; just re-enable button
+    console.error('Save error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-round">save</span> Save';
+  }
+}
+
+function cancelEdit() {
+  if (S.isNew) {
+    if (S.ideas.length > 0) openIdea(S.ideas[0].id);
+    else showEmptyState();
+  } else {
+    const idea = S.ideas.find(i => i.id === S.currentId);
+    if (idea) toViewMode(idea);
+  }
+}
+
+async function deleteIdea() {
+  const idea = S.ideas.find(i => i.id === S.currentId);
+  if (!idea) return;
+
+  const btn = $('btn-delete-confirm');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-round spin-anim">sync</span> Deleting…';
+
+  try {
+    S.ideas = S.ideas.filter(i => i.id !== S.currentId);
+    await saveIdeas(`Delete idea: "${idea.title}"`);
+    closeDeleteModal();
+    toast('Idea deleted', 'success');
+    if (S.ideas.length > 0) openIdea(S.ideas[0].id);
+    else showEmptyState();
+  } catch (err) {
+    console.error('Delete error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-round">delete_forever</span> Delete Idea';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════════ */
+function openDeleteModal() {
+  const idea = S.ideas.find(i => i.id === S.currentId);
+  if (!idea) return;
+  $('delete-idea-name').textContent = idea.title || 'Untitled';
+  $('delete-sub').textContent = S.mode === 'github'
+    ? 'This will be committed as a deletion to your repository.'
+    : 'This action cannot be undone.';
+  show($('delete-overlay'), 'flex');
+}
+function closeDeleteModal() {
+  hide($('delete-overlay'));
+}
+
+function openSetupModal() {
+  const c = S.config;
+  if (c) {
+    $('cfg-owner').value  = c.owner  || '';
+    $('cfg-repo').value   = c.repo   || '';
+    $('cfg-branch').value = c.branch || 'main';
+    $('cfg-file').value   = c.file   || 'data/ideas.json';
+    $('cfg-token').value  = c.token  || '';
+  } else {
+    // Auto-detect from GitHub Pages hostname
+    const host = location.hostname;
+    if (host.endsWith('.github.io')) {
+      $('cfg-owner').value = host.replace('.github.io', '');
+      const match = location.pathname.match(/^\/([^/]+)/);
+      if (match && match[1]) $('cfg-repo').value = match[1];
+    }
+  }
+  hideId('setup-err');
+  show($('setup-overlay'), 'flex');
+}
+function closeSetupModal() {
+  hide($('setup-overlay'));
+}
+
+/* ═══════════════════════════════════════════════════════
+   SETUP / CONNECT
+═══════════════════════════════════════════════════════ */
+async function connectGitHub() {
+  const owner  = $('cfg-owner').value.trim();
+  const repo   = $('cfg-repo').value.trim();
+  const branch = $('cfg-branch').value.trim() || 'main';
+  const file   = $('cfg-file').value.trim()   || 'data/ideas.json';
+  const token  = $('cfg-token').value.trim();
+
+  if (!owner || !repo || !token) {
+    showSetupErr('Please fill in username, repository name, and PAT.');
+    return;
+  }
+
+  S.config = { owner, repo, branch, file, token };
+
+  const btn = $('btn-connect');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-round spin-anim">sync</span> Connecting…';
+
+  try {
+    await GH.testRepo();
+    localStorage.setItem(STORE_CONFIG, JSON.stringify(S.config));
+    S.mode = 'github';
+    closeSetupModal();
+    await loadIdeas();
+    renderList();
+    if (S.ideas.length > 0) openIdea(S.ideas[0].id);
+    else showEmptyState();
+    toast('Connected to GitHub!', 'success');
+  } catch (err) {
+    showSetupErr('Connection failed: ' + err.message);
+    S.config = null;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-round">link</span> Connect Repository';
+  }
+}
+
+function showSetupErr(msg) {
+  $('setup-err-msg').textContent = msg;
+  show($('setup-err'));
+}
+
+function useLocal() {
+  S.mode   = 'local';
+  S.config = null;
+  localStorage.removeItem(STORE_CONFIG);
+  closeSetupModal();
+  loadIdeas().then(() => {
+    renderList();
+    if (S.ideas.length > 0) openIdea(S.ideas[0].id);
+    else showEmptyState();
+  });
+  setSyncStatus('local', 'Local only');
+  updateFooter();
+  toast('Local mode — ideas saved in this browser', 'info');
+}
+
+/* ═══════════════════════════════════════════════════════
+   EVENTS
+═══════════════════════════════════════════════════════ */
+function bindEvents() {
+  // New idea
+  $('btn-new').addEventListener('click', startNew);
+  $('btn-empty-new').addEventListener('click', startNew);
+
+  // Save / Cancel
+  $('btn-save').addEventListener('click', saveCurrent);
+  $('btn-cancel').addEventListener('click', cancelEdit);
+
+  // Edit / Delete
+  $('btn-edit').addEventListener('click', () => {
+    const idea = S.ideas.find(i => i.id === S.currentId);
+    if (idea) toEditMode(idea);
+  });
+  $('btn-delete').addEventListener('click', openDeleteModal);
+
+  // Delete modal
+  $('btn-delete-confirm').addEventListener('click', deleteIdea);
+  $('btn-delete-cancel').addEventListener('click', closeDeleteModal);
+  $('delete-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
+
+  // Settings / Setup
+  $('btn-settings').addEventListener('click', openSetupModal);
+  $('btn-connect').addEventListener('click', connectGitHub);
+  $('btn-use-local').addEventListener('click', useLocal);
+  $('setup-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeSetupModal(); });
+
+  // Sync
+  $('btn-sync').addEventListener('click', async () => {
+    if (S.mode !== 'github') { openSetupModal(); return; }
+    await loadIdeas();
+    renderList();
+    if (S.currentId) {
+      const idea = S.ideas.find(i => i.id === S.currentId);
+      if (idea) openIdea(idea.id); else showEmptyState();
+    }
+    toast('Synced with GitHub', 'success');
+  });
+
+  // Search
+  $('search').addEventListener('input', e => {
+    S.query = e.target.value;
+    renderList();
+  });
+
+  // Sort
+  $('sort').addEventListener('change', e => {
+    S.sort = e.target.value;
+    localStorage.setItem(STORE_SORT, S.sort);
+    renderList();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === 's' && S.isEditing) { e.preventDefault(); saveCurrent(); }
+    if (mod && e.key === 'n' && !S.isEditing) { e.preventDefault(); startNew(); }
+    if (e.key === 'Escape') {
+      if ($('delete-overlay').style.display !== 'none') closeDeleteModal();
+      else if ($('setup-overlay').style.display !== 'none') closeSetupModal();
+      else if (S.isEditing) cancelEdit();
+    }
+  });
+
+  // Enter in title input moves focus to editor
+  $('title-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (quill) quill.focus();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+async function init() {
+  $('sort').value = S.sort;
+
+  const savedCfg = localStorage.getItem(STORE_CONFIG);
+  const hasLocal = !!localStorage.getItem(STORE_LOCAL);
+
+  bindEvents();
+
+  if (savedCfg) {
+    try {
+      S.config = JSON.parse(savedCfg);
+      S.mode   = 'github';
+      await loadIdeas();
+    } catch (err) {
+      console.error('Init error:', err);
+      S.mode = 'local';
+      await loadIdeas();
+    }
+  } else {
+    S.mode = 'local';
+    await loadIdeas();
+  }
+
+  // Show app
+  hide($('loading'));
+  show($('app'), 'flex');
+
+  // Render list and select first or show empty
+  renderList();
+  if (S.ideas.length > 0) openIdea(S.ideas[0].id);
+  else showEmptyState();
+
+  // Show setup modal if no GitHub config and no local data
+  if (!savedCfg && !hasLocal) {
+    openSetupModal();
+  }
+
+  if (S.mode === 'local' && !savedCfg) {
+    setSyncStatus('local', 'Local only');
+    updateFooter();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
