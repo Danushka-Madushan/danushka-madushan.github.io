@@ -2,6 +2,13 @@
   "version": "1.0",
   "ideas": [
     {
+      "id": "5c8ff9fa-933e-4d73-a195-f17d04cefc68",
+      "title": "2D Painter system",
+      "content": "<p>two motors control x and y axis of the drawing pen. when commands given, it draws image</p>",
+      "created_at": "2026-07-05T14:30:51.853Z",
+      "updated_at": "2026-07-05T14:30:51.853Z"
+    },
+    {
       "id": "d19cadf0-6967-4f99-8a81-c8cc8b2f7734",
       "title": "Smart Power Monitoring Wall Socket",
       "content": "<p>Wall socket integrated with electricity monitoring module + esp01. which broadcast how much power is used by that socket to esp32. </p>",
