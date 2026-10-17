@@ -2347,6 +2347,9 @@
     const parseRepoMeta = ( repoUrl ) => {
       const clean = String( repoUrl || '' ).replace( /^https?:\/\/github\.com\//i, '' ).replace( /\/+$/, '' );
       const parts = clean.split( '/' );
+      if ( parts.length === 1 && parts[ 0 ] ) {
+        return { owner: 'Danushka-Madushan', repo: parts[ 0 ] };
+      }
       return {
         owner: parts[ 0 ] || 'Danushka-Madushan',
         repo: parts[ 1 ] || ''
@@ -2372,19 +2375,27 @@
 
       let out = markdown;
 
-      // Markdown image: ![alt](path)
+      // 1. Linked badge images with relative links: [![alt](img_url)](relative_path)
+      out = out.replace( /\[\s*(!\[[^\]]*\]\([^)]+\))\s*\]\((?!https?:\/\/|mailto:|#|\/)([^)]+)\)/g, ( match, imgMd, path ) => {
+        const clean = path.replace( /^\.\//, '' ).trim();
+        const isAsset = /\.(png|jpe?g|gif|svg|webp|ico|mp4|webm|zip|tar|gz|pdf)$/i.test( clean );
+        const target = isAsset ? `${ rawBase }/${ clean }` : `${ blobBase }/${ clean }`;
+        return `[${ imgMd }](${ target })`;
+      } );
+
+      // 2. Markdown image: ![alt](path)
       out = out.replace( /!\[([^\]]*)\]\((?!https?:\/\/|data:|\/|#)([^)]+)\)/g, ( match, alt, path ) => {
         const clean = path.replace( /^\.\//, '' ).trim();
         return `![${ alt }](${ rawBase }/${ clean })`;
       } );
 
-      // HTML img tag: <img src="path">
+      // 3. HTML img tag: <img src="path">
       out = out.replace( /<img([^>]+)src=["'](?!https?:\/\/|data:|\/|#)([^"']+)["']([^>]*)>/gi, ( match, before, src, after ) => {
         const clean = src.replace( /^\.\//, '' ).trim();
         return `<img${ before }src="${ rawBase }/${ clean }"${ after }>`;
       } );
 
-      // Markdown links: [text](path)
+      // 4. Markdown links: [text](path)
       out = out.replace( /\[([^\]]+)\]\((?!https?:\/\/|mailto:|#|\/)([^)]+)\)/g, ( match, text, path ) => {
         const clean = path.replace( /^\.\//, '' ).trim();
         const isAsset = /\.(png|jpe?g|gif|svg|webp|ico|mp4|webm|zip|tar|gz|pdf)$/i.test( clean );
@@ -2442,7 +2453,7 @@
         } );
         const parsed = marked.parse( resolved );
         return DOMPurify.sanitize( parsed, {
-          ADD_ATTR: [ 'target', 'rel' ]
+          ADD_ATTR: [ 'target', 'rel', 'align' ]
         } );
       }
       return '<pre style="white-space:pre-wrap; font-family:var(--f-mono);">' +
@@ -2563,6 +2574,7 @@
       dialogTitle.textContent = project.title || project.id;
       dialogBranch.textContent = project.branch || 'main';
       dialogRepoLink.href = project.links?.github || project.repo;
+      dialogBody.scrollTop = 0;
 
       // Show skeleton loader
       dialogBody.innerHTML = `
@@ -2607,9 +2619,20 @@
           pre.appendChild( copyBtn );
         } );
 
-        // Ensure external links open in new tab
+        // Ensure external links open in new tab and internal TOC anchors scroll smoothly
         dialogBody.querySelectorAll( 'a' ).forEach( a => {
-          if ( a.hostname && a.hostname !== window.location.hostname ) {
+          const href = a.getAttribute( 'href' ) || '';
+          if ( href.startsWith( '#' ) && href.length > 1 ) {
+            a.addEventListener( 'click', ( ev ) => {
+              const targetId = href.slice( 1 );
+              const targetEl = dialogBody.querySelector( '#' + CSS.escape( targetId ) ) ||
+                               dialogBody.querySelector( '[name="' + CSS.escape( targetId ) + '"]' );
+              if ( targetEl ) {
+                ev.preventDefault();
+                targetEl.scrollIntoView( { behavior: 'smooth' } );
+              }
+            } );
+          } else if ( a.hostname && a.hostname !== window.location.hostname ) {
             a.target = '_blank';
             a.rel = 'noopener noreferrer';
           }
