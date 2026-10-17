@@ -1,0 +1,144 @@
+{
+  "version": "1.0",
+  "projects": [
+    {
+      "id": "animepahe-cli",
+      "repo": "https://github.com/Danushka-Madushan/animepahe-cli",
+      "title": "AnimePahe CLI",
+      "description": "High-performance C++ command-line tool for downloading anime with batch support, quality filters, ZIP packaging, and auto-updating.",
+      "tags": ["C++", "CLI", "RE2", "Automation"],
+      "branch": "main",
+      "featured": true,
+      "stars": 98,
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/animepahe-cli"
+      }
+    },
+    {
+      "id": "greenhouse-automation-system",
+      "repo": "https://github.com/Danushka-Madushan/greenhouse-automation-system",
+      "title": "GreenOS — Greenhouse Automation",
+      "description": "Affordable IoT remote monitoring and automation system for greenhouses with real-time sensors, autonomous climate control, and cloud telemetry.",
+      "tags": ["IoT", "Arduino", "ASP.NET Core", "React", "TypeScript"],
+      "branch": "main",
+      "featured": true,
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/greenhouse-automation-system"
+      }
+    },
+    {
+      "id": "burnlink",
+      "repo": "https://github.com/Danushka-Madushan/burnlink",
+      "title": "BurnLink",
+      "description": "Zero-dependency single-use secret sharing URL shortener running on Deno Deploy and Deno KV with anti-crawler interstitial protection.",
+      "tags": ["TypeScript", "Deno Deploy", "Deno KV", "Security"],
+      "branch": "main",
+      "featured": true,
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/burnlink"
+      }
+    },
+    {
+      "id": "smart-wall-socket",
+      "repo": "https://github.com/Danushka-Madushan/smart-wall-socket",
+      "title": "Smart Wall Socket",
+      "description": "ESP32-powered remote control smart wall socket with real-time power consumption and electricity usage monitoring.",
+      "tags": ["IoT", "ESP32", "Hardware", "Kotlin", "C++"],
+      "branch": "main",
+      "featured": true,
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/smart-wall-socket"
+      }
+    },
+    {
+      "id": "stream-proxy-worker",
+      "repo": "https://github.com/Danushka-Madushan/stream-proxy-worker",
+      "title": "Stream Proxy Worker",
+      "description": "Cloudflare Worker edge proxy for media streams (HLS, MP4) that preserves referrer headers, enables CORS, and secures endpoints.",
+      "tags": ["Cloudflare Workers", "TypeScript", "Streaming", "Edge"],
+      "branch": "main",
+      "featured": true,
+      "stars": 6,
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/stream-proxy-worker"
+      }
+    },
+    {
+      "id": "cloudflare-clearance-viewer",
+      "repo": "https://github.com/Danushka-Madushan/cloudflare-clearance-viewer",
+      "title": "Cloudflare Clearance Viewer",
+      "description": "Browser extension to view and copy cf_clearance tokens instantly from protected sites without opening DevTools.",
+      "tags": ["TypeScript", "CRXJS", "Browser Extension", "Security"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/cloudflare-clearance-viewer"
+      }
+    },
+    {
+      "id": "google-advanced-search-builder",
+      "repo": "https://github.com/Danushka-Madushan/google-advanced-search-builder",
+      "title": "Google Advanced Search Builder",
+      "description": "Interactive visual query generator covering every Google search operator, producing live shareable links.",
+      "tags": ["React", "TypeScript", "Vite", "Search"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/google-advanced-search-builder"
+      }
+    },
+    {
+      "id": "LifeLineConnect",
+      "repo": "https://github.com/Danushka-Madushan/LifeLineConnect",
+      "title": "LifeLineConnect",
+      "description": "Hospital Blood Bank network demonstrating hybrid database architecture across Oracle PL/SQL, MongoDB, and C# backend.",
+      "tags": ["C#", "Oracle SQL", "PL/SQL", "MongoDB", "React"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/LifeLineConnect"
+      }
+    },
+    {
+      "id": "SnapShop",
+      "repo": "https://github.com/Danushka-Madushan/SnapShop",
+      "title": "SnapShop — Visual Shopping",
+      "description": "Android application built with Jetpack Compose, Google ML Kit, and Gemini API for visual product discovery and shopping.",
+      "tags": ["Kotlin", "Jetpack Compose", "ML Kit", "Gemini API"],
+      "branch": "master",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/SnapShop"
+      }
+    },
+    {
+      "id": "electricity-outage-tracker",
+      "repo": "https://github.com/Danushka-Madushan/electricity-outage-tracker",
+      "title": "Electricity Outage Tracker",
+      "description": "Data structures and algorithms showcase utilizing graph traversal, trie trees, and priority heap queues for grid outage monitoring.",
+      "tags": ["TypeScript", "Algorithms", "Graphs", "Trie"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/electricity-outage-tracker"
+      }
+    },
+    {
+      "id": "SVG-2-PNG",
+      "repo": "https://github.com/Danushka-Madushan/SVG-2-PNG",
+      "title": "SVG-2-PNG Converter",
+      "description": "Browser-based vector image conversion tool with customizable scale factors and aspect ratio preservation.",
+      "tags": ["React", "TypeScript", "Vite", "Tailwind CSS"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/SVG-2-PNG"
+      }
+    },
+    {
+      "id": "cSnake",
+      "repo": "https://github.com/Danushka-Madushan/cSnake",
+      "title": "cSnake",
+      "description": "Lightweight, cross-platform terminal-based Snake game written in modern C++ with ANSI rendering and zero external game engine bloat.",
+      "tags": ["C++", "CLI", "Game Dev"],
+      "branch": "main",
+      "links": {
+        "github": "https://github.com/Danushka-Madushan/cSnake"
+      }
+    }
+  ]
+}
